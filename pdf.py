@@ -38,11 +38,6 @@ def pdf_formater(book_content, book_name, book_id):
    
     
 """Все связано тестами"""  
-def code():
-    """Закодирование в формат base 64"""
-    with open('Fillips.pdf' , 'rb') as fp:
-        binary = base64.b64encode(fp.read())
-        return binary
 def test_2():
     uri = 'mongodb://root:example@localhost:27017/'
     client = MongoClient(uri)
