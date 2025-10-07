@@ -1,0 +1,36 @@
+FROM python:3.11 as builder
+
+WORKDIR /app
+
+# Копируем зависимости и устанавливаем их
+COPY requirements.txt .
+
+# Устанавливаем зависимости в отдельную папку
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Стадия 2: Финальный образ
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Копируем установленные пакеты из стадии сборки
+COPY --from=builder /root/.local /root/.local
+
+# Копируем код приложения
+COPY . .
+
+# Устанавливаем системные зависимости для PyMuPDF
+RUN apt-get update && apt-get install -y \
+    libfreetype6 \
+    libjpeg62-turbo \
+    libxext6 \
+    libx11-6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Добавляем путь к Python пакетам
+ENV PATH=/root/.local/bin:$PATH
+ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb4
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    command: mongod --quiet --logpath /dev/null
+
+  books-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage  # Указываем многостадийный Dockerfile
+    container_name: books_service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_URL=mongodb://root:example@mongodb4:27017/
+
+volumes:
+  mongodb_data:
