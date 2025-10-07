@@ -1,0 +1,31 @@
+toml
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "books-microservice"
+version = "0.1.0"
+description = "Async microservice for PDF books management"
+authors = [
+    {name = "relizene", email = "vovaegorov689@gmail.com"},
+]
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "motor>=3.3.2",
+    "pydantic>=2.5.0",
+    "PyMuPDF>=1.23.8",
+    "python-multipart>=0.0.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
