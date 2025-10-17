@@ -80,10 +80,12 @@ async def delete_books(metadata: BookDeleteModels):
             return {
                 'message' : f'Книга не удалена, но страницы удалены, удаленных страниц {delete_for_pages.deleted_count}', 
                 'cod' : '2003',
+                'delete_count' : f'{delete_for_pages.deleted_count}',
                 }
         return {
             'message' : f'Страницы удалились в количестве {delete_for_pages.deleted_count}, а сама книга нет',
             'cod' : '2002',
+            'delete_count' : f'{delete_for_pages.deleted_count}',
             }
     
     except Exception as e:
