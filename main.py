@@ -5,7 +5,7 @@ import uvicorn
 import motor.motor_asyncio
 import asyncio
 import os
-from pdf import pdf_formater, delete_file
+from pdf import pdf_formater
 
 app = FastAPI()
 
@@ -54,15 +54,6 @@ async def upload_books(metadata: BookModels) :
             await books_collection.delete_one({'_id' : id_back})
         return {'message': f' Внутреняя Ошибка базы данных: {str(r)}', 'cod': '1005'}
     
-    finally:
-        try:
-             await asyncio.get_running_loop().run_in_executor(
-                 None,
-                 delete_file,
-                 metadata.book_name
-                 )
-        except Exception as e:
-            print(f"Произошла ошибка при удалении временнего файла {e}")
     
 
 class BookDeleteModels(BaseModel):
