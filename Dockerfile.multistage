@@ -13,24 +13,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Устанавливаем системные зависимости для PyMuPDF + очистка в ОДНОМ RUN
+RUN apt-get update && apt-get install -y \
+    libfreetype6 \
+    libjpeg62-turbo \
+    libxext6 \
+    libx11-6 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
 # Копируем установленные пакеты из стадии сборки
 COPY --from=builder /root/.local /root/.local
 
 # Копируем код приложения
 COPY . .
 
-# Устанавливаем системные зависимости для PyMuPDF
-RUN apt-get update && apt-get install -y \
-    libfreetype6 \
-    libjpeg62-turbo \
-    libxext6 \
-    libx11-6 \
-    && rm -rf /var/lib/apt/lists/*
-
 # Добавляем путь к Python пакетам
 ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages
+ENV PYTHONPATH=/app
 
-EXPOSE 8000
+EXPOSE 8001
 
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запускаем FastAPI
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

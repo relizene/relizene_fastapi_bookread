@@ -6,8 +6,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
     command: mongod --quiet --logpath /dev/null
@@ -19,8 +17,6 @@ services:
       dockerfile: Dockerfile.multistage  # Указываем многостадийный Dockerfile
     container_name: books_service
     restart: unless-stopped
-    ports:
-      - "8000:8000"
     depends_on:
       - mongodb
     environment:
