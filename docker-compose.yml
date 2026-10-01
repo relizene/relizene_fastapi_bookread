@@ -16,7 +16,7 @@ services:
   books-service:
     build:
       context: .
-      dockerfile: Dockerfile.multistage  # Указываем многостадийный Dockerfile
+      dockerfile: Dockerfile.multistage  
     container_name: books_service
     restart: unless-stopped
     ports:
@@ -24,7 +24,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGO_URL=mongodb://root:example@mongodb4:27017/
+      - MONGO_URL=mongodb://root:example@mongodb:27017/
 
 volumes:
   mongodb_data:

@@ -5,7 +5,7 @@ import uvicorn
 import motor.motor_asyncio
 import asyncio
 import os
-from pdf import pdf_formater
+from app.infractructure.pdf.parser import pdf_formater
 
 app = FastAPI()
 
