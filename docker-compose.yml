@@ -25,6 +25,7 @@ services:
       - mongodb
     environment:
       - MONGO_URL=mongodb://root:example@mongodb:27017/
+      - MONGO_DB=book_library
 
 volumes:
   mongodb_data:
