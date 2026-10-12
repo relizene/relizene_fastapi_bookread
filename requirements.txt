@@ -6,3 +6,5 @@ pydantic==2.5.0
 PyMuPDF==1.23.8
 python-multipart==0.0.6
 pydantic-settings
+pytest
+pytest-asyncio
