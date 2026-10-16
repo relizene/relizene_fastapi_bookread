@@ -24,8 +24,8 @@ class BookUploadResponse(BaseModel):
 
     message: str
     cod: ResponseCode
-    book_id: str | None = Field(default=None, alias="id_книги")
-    saved_pages: str | None = Field(default=None, alias="сохраненные страницы")
+    book_id: str | None = None
+    saved_pages: str | None = None
 
 class DeleteBookREsponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)

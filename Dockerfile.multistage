@@ -6,7 +6,10 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Устанавливаем зависимости в отдельную папку
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --user --no-cache-dir \
+    --timeout 120 \
+    --retries 5 \
+    -r requirements.txt
 
 # Стадия 2: Финальный образ
 FROM python:3.11-slim

@@ -30,21 +30,21 @@ async def upload_books(
         в пдф и с помощью модуля pymypdf постранично сохраняет его"""
     try:
         result = await service.upload(metadata.book_name, metadata.content)
-        if result['extraction_failed']:
+        if result["extraction_failed"] == True:
             return BookUploadResponse(
                 cod=ResponseCode.PDF_EXCTRACTION_FAILED,
-                message="не удалось извлечь страницы из pdf"
+                message="не удалось извлечь стрицы из pdf"
             )
         return BookUploadResponse(
             cod=ResponseCode.BOOK_SAVED,
             message=f'Книга сохранена',
-            book_id = result['book_id'],
+            book_id = result["book_id"],
             saved_pages = f"{result['saved_pages']}"
         )
     except Exception as e:
         return BookUploadResponse(
             cod=ResponseCode.UPLOAD_DB_ERROR,
-            message=f"ошиюка базы данных {str(e)}"
+            message=f"ошибка базы данных {str(e)}"
         )
 
 @router.post('/delete/', response_model=DeleteBookREsponse)
@@ -55,7 +55,7 @@ async def delete_books(
     """Функция для удаления страниц книги и самой книги"""
     try:
         excpected = int(metadata.pages)
-        result = await service.delete(metadata.id)
+        result = await service.delete(metadata.id, int(metadata.pages))
         deleted_pages = result['deleted_pages']
         if result['book_deleted']:
             return DeleteBookREsponse(

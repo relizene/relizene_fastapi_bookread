@@ -11,6 +11,12 @@ services:
     volumes:
       - mongodb_data:/data/db
     command: mongod --quiet --logpath /dev/null
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 
   books-service:
@@ -22,10 +28,17 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
     environment:
       - MONGO_URL=mongodb://root:example@mongodb:27017/
       - MONGO_DB=book_library
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   mongodb_data:
