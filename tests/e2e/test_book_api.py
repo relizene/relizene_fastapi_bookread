@@ -34,7 +34,7 @@ async def test_upload_extraction_failed(client: AsyncClient, monkeypatch):
     assert response.status_code == 200
     body = response.json()
     assert body["cod"] == "1006"
-    assert body["book_id"] is None
+    assert "book_id" not in body
 
 async def test_upload_db_error(client: AsyncClient, monkeypatch):
     """Парсер бросает исключение -> 1005."""
@@ -136,8 +136,6 @@ async def test_get_page_invalid_id(client: AsyncClient):
         json={"book_id": "not-a-valid-id", "page": "1"},
     )
 
-    assert response.status_code == 200
-    body = response.json()
-    assert body["cod"] == "3002"
+    assert response.status_code == 422
 
 

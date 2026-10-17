@@ -1,7 +1,11 @@
 from enum import StrEnum
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from bson import ObjectId
+from bson.errors import InvalidId
 
 
+
+#---------------Базовые коды для ответов-----------------------
 class ResponseCode(StrEnum):
     #uplooad
     BOOK_SAVED = "1001"
@@ -19,6 +23,8 @@ class ResponseCode(StrEnum):
     PAGE_NOT_FOUND = "3002"
     PAGE_DB_ERROR = "3003"
 
+
+#--------------------Базовые методы отправки ответов в словарях
 class BookUploadResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -27,7 +33,7 @@ class BookUploadResponse(BaseModel):
     book_id: str | None = None
     saved_pages: str | None = None
 
-class DeleteBookREsponse(BaseModel):
+class DeleteBookResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     message: str 
@@ -42,3 +48,33 @@ class BookPageResponse(BaseModel):
     page_number: int | None = None
     content: str | None = None
 
+#----------------------Входящие схемы-------------------
+
+
+class BookCreateRequests(BaseModel):
+    book_name: str = Field(min_length=1, max_length=100)
+    content: str = Field(min_length=1)
+
+class BookDeleteRequests(BaseModel):
+    id: str
+    pages: int = Field(ge=0)
+
+    @field_validator("id")
+    @classmethod
+    def _validate_object_id(cls, v: str) -> str:
+        if not ObjectId.is_valid(v):
+            raise ValueError(f"{v} is not valid ObjectId")
+        return v
+
+class BookPageRequests(BaseModel):
+    book_id: str
+    page: int = Field(ge=1)
+
+
+    @field_validator("book_id")
+    @classmethod
+    def _validate_object_id(cls, v: str) -> str:
+        if not ObjectId.is_valid(v):
+            raise ValueError(f"{v} is not valid ObjectId")
+        return v
+    

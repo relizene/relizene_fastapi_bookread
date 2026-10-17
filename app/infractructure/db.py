@@ -13,7 +13,7 @@ class Mongo():
     def close(self):
         if self._client is not None:
             self._client.close()
-        self._client - None
+        self._client = None
         self._db = None
 
     @property

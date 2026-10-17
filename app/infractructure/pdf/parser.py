@@ -4,7 +4,7 @@ import io
 import re
 
 
-def pdf_formater(book_content, book_name, book_id):
+def pdf_formater(book_content: str, book_name: str, book_id: str):
     """Берет данные закодированные в base 64, затем сохраняет его в пдф файл и с помощью
     pymupdf форматирует и вовзращает для отправки в бд"""
     

@@ -1,6 +1,7 @@
 import pytest
 
 from app.domain.books.service import BookService
+from app.domain.books.exceptions import PageNotFound, PdfExctractionFailed
 from tests.conftest import FakeBookRepository
 
 
@@ -19,7 +20,6 @@ async def test_upload_success(fake_repo: FakeBookRepository, monkeypatch):
     )
     service = BookService(fake_repo)
     result = await service.upload("Test Book", "fake-base64")
-    assert result["extraction_failed"] is False
     assert result["saved_pages"] == 2
     assert "book_id" in result
     assert result["book_id"] in fake_repo._books
@@ -34,8 +34,8 @@ async def test_upload_pdf_exctraction_failed(fake_repo: FakeBookRepository, monk
             fake_pdf_formater_empty,
         )
         service = BookService(fake_repo)
-        result = await service.upload("Test Book", "fake-base64")
-        assert result["extraction_failed"] is True
+        with pytest.raises(PdfExctractionFailed):
+             await service.upload("Test Book", "fake-base-64")
         assert len(fake_repo._books) == 0  
         assert len(fake_repo._pages) == 0
 
@@ -105,6 +105,6 @@ async def test_get_page_not_found(fake_repo: FakeBookRepository):
     """Страница не найдена"""
     book_id = await fake_repo.create_book("Test")
     service = BookService(fake_repo)
-    result = await service.get_page(book_id, 13)
-    assert result is None
+    with pytest.raises(PageNotFound):
+         await service.get_page(book_id, 999)
 

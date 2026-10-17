@@ -1,8 +1,13 @@
 import asyncio
+import logging
 from bson import ObjectId
 
+from app.domain.books.exceptions import BookError, PageNotFound, PdfExctractionFailed
 from app.domain.books.repository import BookRepository
 from app.infractructure.pdf.parser import pdf_formater
+
+
+logger = logging.getLogger(__name__)
 
 
 class BookService:
@@ -22,13 +27,16 @@ class BookService:
             )
             if books_content:
                 saved = await self.repo.insert_pages(books_content)
+                logger.info("Book upload: id=%s, pages=%d", book_id, saved)
                 return {
                     'book_id' : book_id,
                     'saved_pages' : saved,
-                    'extraction_failed' : False, 
                 }
             await self.repo.delete_book(book_id)
-            return {'extraction_failed' : True}
+            logger.info("PDF Exctraction failed for book_name=%s, rolled back", book_name)
+            raise PdfExctractionFailed()
+        except BookError:
+            raise
         except Exception:
             if book_id is not None:
                 await self.repo.delete_book(book_id)
@@ -38,6 +46,10 @@ class BookService:
         deleted_pages = await self.repo.delete_pages(book_id)
         if deleted_pages == excepted_pages:
             deleted_book = await self.repo.delete_book(book_id)
+            logger.info(
+                "Book deleted: id=%s, pages=%d, book_deleted=%s",
+                book_id, deleted_pages, deleted_book==1,
+            )
             return {
                 'deleted_pages' : deleted_pages,
                 'book_deleted' : deleted_book == 1,
@@ -47,6 +59,10 @@ class BookService:
             'book_deleted' : False
         }
 
-    async def get_page(self, book_id: str, page: int) -> dict | None:
-        return await self.repo.get_page(book_id, page)
+    async def get_page(self, book_id: str, page: int) -> dict:
+        page_doc= await self.repo.get_page(book_id, page)
+        if page_doc is None:
+            raise PageNotFound()
+        return page_doc
+        
     
